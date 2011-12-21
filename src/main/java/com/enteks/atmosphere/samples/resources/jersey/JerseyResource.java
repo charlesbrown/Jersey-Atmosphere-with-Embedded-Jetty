@@ -8,14 +8,14 @@ import javax.ws.rs.core.MediaType;
  * Date: 12/20/11
  * Time: 7:46 AM
  */
-@Path("/jersey")
+@Path("/")
 public class JerseyResource {
     
     @GET
     @Path("/get")
     @Produces(MediaType.TEXT_PLAIN)
     public String doGet() {
-        return "This is the plain Jersey GET method.";
+        return "This is the plain Jersey GET method.\n";
     }
 
     @POST
@@ -23,6 +23,6 @@ public class JerseyResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_PLAIN)
     public String doPost(@FormParam("message") String message) {
-        return "You posted this: "+message;
+        return "You posted this: "+message+"\n";
     }
 }
