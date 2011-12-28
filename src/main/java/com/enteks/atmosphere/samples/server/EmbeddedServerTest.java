@@ -8,11 +8,10 @@ package com.enteks.atmosphere.samples.server;
 public class EmbeddedServerTest {
     
     public static void main(String[] args) throws Exception {
-        String port = "";
-        if(args.length > 0) {
-            port = args[0];
-        }
+        String port = (args.length > 0) ? args[0]:"";
+        String sslPort = (args.length > 1) ? args[1]:"";
+        String maxInactivityLimit = (args.length > 2) ? args[2]:"";
         EmbeddedServer server = new EmbeddedServer();
-        server.startServer(port,"");
+        server.startServer(port, sslPort, maxInactivityLimit);
     }
 }

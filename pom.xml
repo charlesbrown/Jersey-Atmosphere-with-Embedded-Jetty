@@ -365,7 +365,7 @@
     </repositories>
 
     <properties>
-        <jetty-version>8.0.3.v20111011</jetty-version>
+        <jetty-version>8.1.0.RC1</jetty-version>
         <jetty.port>2880</jetty.port>
         <freemarker-version>2.3.15</freemarker-version>
         <selenium.host>localhost</selenium.host>

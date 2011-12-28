@@ -5,12 +5,17 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
 import org.atmosphere.container.JettyCometSupportWithWebSocket;
 import org.atmosphere.cpr.ApplicationConfig;
 import org.atmosphere.cpr.AtmosphereServlet;
+import org.eclipse.jetty.http.ssl.SslContextFactory;
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.nio.SelectChannelConnector;
+import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.security.KeyStore;
 import java.util.Map;
 
 public final class EmbeddedServer extends Server {
@@ -22,18 +27,37 @@ public final class EmbeddedServer extends Server {
     private static final String JERSEY_RESOURCES = "com.enteks.atmosphere.samples.resources.jersey";
     private static final String DEFAULT_MAX_INACTIVITY_LIMIT = String.valueOf(properties.get("atmosphere.service.maxinactivitylimit"));
     private static final String DEFAULT_PORT = String.valueOf(properties.get("jetty.port"));
+    private static final String DEFAULT_SSL_PORT = String.valueOf(properties.get("jetty.ssl.port"));
+    private static final String SSL_KEYSTORE_FILE = String.valueOf(properties.get("jetty.ssl.keystore"));
+    private static final String SSL_KEYSTORE_PASS = String.valueOf(properties.get("jetty.ssl.keystore.storepass"));
     
     private static Server webServer;
 
     @SuppressWarnings("unused")
     public void startServer() throws Exception {
-        startServer(DEFAULT_PORT, DEFAULT_MAX_INACTIVITY_LIMIT);
+        startServer(DEFAULT_PORT, DEFAULT_SSL_PORT, DEFAULT_MAX_INACTIVITY_LIMIT);
     }
     
-    public void startServer(String port, String maxInactivityLimit) throws Exception {
-        int portAsInt = (!port.isEmpty()) ? Integer.valueOf(port):Integer.valueOf(DEFAULT_PORT);
-        webServer = new Server(portAsInt);
+    public void startServer(String port, String sslPort, String maxInactivityLimit) throws Exception {
+        webServer = new Server();
         logger.info("Starting EmbeddedServer...");
+
+        SelectChannelConnector selectChannelConnector = new SelectChannelConnector();
+        selectChannelConnector.setPort((port.isEmpty()) ? Integer.valueOf(DEFAULT_PORT) : Integer.valueOf(port));
+
+        SslContextFactory sslContextFactory = new SslContextFactory();
+        sslContextFactory.setKeyStorePassword(SSL_KEYSTORE_PASS);
+
+        KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+        keyStore.load(this.getClass().getResourceAsStream(SSL_KEYSTORE_FILE), SSL_KEYSTORE_PASS.toCharArray());
+        sslContextFactory.setKeyStore(keyStore);
+
+        SslSelectChannelConnector sslSelectChannelConnector = new SslSelectChannelConnector(sslContextFactory);
+        sslSelectChannelConnector.setPort((sslPort.isEmpty() ? Integer.valueOf(DEFAULT_SSL_PORT) : Integer.valueOf(sslPort)));
+
+        Connector[] connectors = new Connector[] {selectChannelConnector, sslSelectChannelConnector};
+
+        webServer.setConnectors(connectors);
 
         ServletHolder atmosphereServletHolder = initAtmosphereServlet(maxInactivityLimit);
         ServletHolder jerseyServletHolder = initJerseyServlet();
