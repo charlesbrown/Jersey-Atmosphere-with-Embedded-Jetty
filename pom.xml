@@ -111,9 +111,9 @@
             <version>1.5.1</version>
         </dependency>
         <dependency>
-            <groupId>org.easymock</groupId>
-            <artifactId>easymock</artifactId>
-            <version>3.0</version>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.8.5</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -259,6 +259,14 @@
                         <packageBranchRate>95</packageBranchRate>
                         <haltOnFailure>false</haltOnFailure>
                     </check>
+                    <instrumentation>
+                        <ignores>
+                            <ignore>com.enteks.atmosphere.samples.server.*</ignore>
+                        </ignores>
+                        <excludes>
+                            <exclude>com/enteks/atmosphere/samples/server/*</exclude>
+                        </excludes>
+                    </instrumentation>
                 </configuration>
                 <executions>
                     <execution>
