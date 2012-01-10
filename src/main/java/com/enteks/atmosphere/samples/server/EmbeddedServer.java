@@ -10,8 +10,10 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
+import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,11 +63,15 @@ public final class EmbeddedServer extends Server {
 
         ServletHolder atmosphereServletHolder = initAtmosphereServlet(maxInactivityLimit);
         ServletHolder jerseyServletHolder = initJerseyServlet();
+        FilterHolder filterHolder = new FilterHolder(CrossOriginFilter.class);
+        filterHolder.setInitParameter("allowedOrigins", "*");
+        filterHolder.setInitParameter("allowedMethods", "GET, POST");
 
         ServletContextHandler servletContextHandler;
         servletContextHandler = new ServletContextHandler(webServer, "/", ServletContextHandler.SESSIONS);
         servletContextHandler.addServlet(atmosphereServletHolder, "/atmosphere/*");
         servletContextHandler.addServlet(jerseyServletHolder, "/jersey/*");
+        servletContextHandler.addFilter(filterHolder, "/*", null);
 
         webServer.start();
         webServer.join();

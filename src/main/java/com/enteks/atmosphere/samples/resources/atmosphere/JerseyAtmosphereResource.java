@@ -37,6 +37,6 @@ public class JerseyAtmosphereResource {
             @FormParam("message") String message
     )
     {
-        return new Broadcastable(message,"", channel);
+        return new Broadcastable(message,"thisMessageShouldBeReturnedToCaller", channel);
     }
 }
