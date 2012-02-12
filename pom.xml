@@ -384,6 +384,6 @@
         <selenium.host>localhost</selenium.host>
         <selenium.port>4444</selenium.port>
         <jersey-version>1.8</jersey-version>
-        <atmosphere-version>0.8.4</atmosphere-version>
+        <atmosphere-version>0.8.5</atmosphere-version>
     </properties>
 </project>
